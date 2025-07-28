@@ -1,6 +1,7 @@
 streamlit
 langchain>=0.1.14
 langchain-groq
+langchain-community
 faiss-cpu
 sentence-transformers
 tiktoken
