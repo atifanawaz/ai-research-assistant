@@ -1,0 +1,11 @@
+streamlit
+langchain>=0.1.14
+langchain-groq
+faiss-cpu
+sentence-transformers
+tiktoken
+pypdf
+PyMuPDF
+docx2txt
+requests
+tf-keras
