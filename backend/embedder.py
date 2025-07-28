@@ -2,7 +2,6 @@
 
 from backend.chunker import chunk_documents
 from langchain_community.vectorstores import FAISS
-from langchain.embeddings import HuggingFaceEmbeddings
 from sentence_transformers import SentenceTransformer
 
 class CustomEmbedding:
@@ -15,14 +14,11 @@ class CustomEmbedding:
     def embed_query(self, text):
         return self.model.encode(text, convert_to_tensor=False)
 
+    def __call__(self, text):
+        return self.embed_query(text)
+
 def create_or_load_vectorstore(documents):
-    # Step 1: Chunk documents
     chunks = chunk_documents(documents)
-
-    # Step 2: Use the custom embedding wrapper
     embeddings = CustomEmbedding()
-
-    # Step 3: Create vectorstore
     vectorstore = FAISS.from_documents(chunks, embeddings)
-
     return vectorstore
