@@ -1,13 +1,22 @@
+# Streamlit app
 streamlit
+
+# LangChain core & extensions
 langchain>=0.1.14
 langchain-groq
+langchain-community
+
+# Vector DB & Embeddings
 faiss-cpu
 sentence-transformers
+transformers
 tiktoken
+
+# File parsing
 pypdf
 PyMuPDF
 docx2txt
 requests
+
+# ML Backend 
 tf-keras
-transformers
-langchain-community
