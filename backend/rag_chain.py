@@ -1,7 +1,8 @@
 from langchain.chains.question_answering import load_qa_chain
-from langchain_groq import ChatGroq
 import os
 GROQ_API_KEY = os.getenv("GROQ_API_KEY")
+from langchain_groq import ChatGroq
+
 
 
 

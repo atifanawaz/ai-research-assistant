@@ -10,4 +10,5 @@ PyMuPDF
 docx2txt
 requests
 tf-keras
+transformers
 
