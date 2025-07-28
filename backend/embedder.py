@@ -1,8 +1,9 @@
 # embedder.py
 
 from backend.chunker import chunk_documents
-from langchain.vectorstores import FAISS
-from langchain.embeddings import HuggingFaceEmbeddings
+from langchain_community.vectorstores import FAISS
+from langchain_community.embeddings import OpenAIEmbeddings
+
 
 def create_or_load_vectorstore(documents):
     # Step 1: Chunk the documents
