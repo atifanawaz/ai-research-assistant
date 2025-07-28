@@ -8,9 +8,10 @@ def create_or_load_vectorstore(documents):
     # Step 1: Chunk the documents
     chunks = chunk_documents(documents)
 
-    # Step 2: Use HuggingFace sentence-transformer for embeddings
+    # Step 2: Use HuggingFace sentence-transformer for embeddings (force CPU)
     embeddings = HuggingFaceEmbeddings(
-        model_name="sentence-transformers/all-MiniLM-L6-v2"
+        model_name="sentence-transformers/all-MiniLM-L6-v2",
+        model_kwargs={"device": "cpu"}  # force CPU usage to avoid GPU-related issues on Streamlit
     )
 
     # Step 3: Create vectorstore using FAISS
