@@ -1,5 +1,7 @@
 import streamlit as st
-from config import GROQ_API_KEY
+import os
+GROQ_API_KEY = os.getenv("GROQ_API_KEY")
+
 from backend.loader import load_documents
 from backend.embedder import create_or_load_vectorstore
 from backend.rag_chain import get_answer_with_citations

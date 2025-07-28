@@ -1,6 +1,8 @@
 from langchain.chains.question_answering import load_qa_chain
 from langchain_groq import ChatGroq
-from config import GROQ_API_KEY
+import os
+GROQ_API_KEY = os.getenv("GROQ_API_KEY")
+
 
 
 def get_answer_with_citations(question, vectorstore):
