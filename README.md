@@ -7,7 +7,7 @@ An intelligent, citation-aware research assistant powered by LangChain, LLaMA 3 
 ## 🔗 Live Demo
 
 Try it here:  
-[https://ai-research-assistant-dro7f3ajgp4fq5vdjqiffd.streamlit.app/](https://ai-research-assistant-dro7f3ajgp4fq5vdjqiffd.streamlit.app/)
+[https://ai-research-assistant-dro7f3ajgp4fq5vdjqiffd.streamlit.app/](https://askmyresearch.streamlit.app/)
 
 ---
 
@@ -36,10 +36,3 @@ Try it here:
 
 ---
 
-## 🛠️ Installation & Local Setup
-
-### 1. Clone the Repository
-
-```bash
-git clone https://github.com/your-username/ai-research-assistant.git
-cd ai-research-assistant
