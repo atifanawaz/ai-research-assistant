@@ -8,13 +8,12 @@ def create_or_load_vectorstore(documents):
     # Step 1: Chunk the documents
     chunks = chunk_documents(documents)
 
-    # Step 2: Use HuggingFace sentence-transformer for embeddings (force CPU)
+    # Step 2: Load HuggingFace embeddings (no device override)
     embeddings = HuggingFaceEmbeddings(
-        model_name="sentence-transformers/all-MiniLM-L6-v2",
-        model_kwargs={"device": "cpu"}  # force CPU usage to avoid GPU-related issues on Streamlit
+        model_name="sentence-transformers/all-MiniLM-L6-v2"
     )
 
-    # Step 3: Create vectorstore using FAISS
+    # Step 3: Create FAISS vectorstore
     vectorstore = FAISS.from_documents(chunks, embeddings)
 
     return vectorstore
