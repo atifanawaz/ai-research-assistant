@@ -7,25 +7,32 @@ from citations.citation_formatter import format_citations_grouped
 
 GROQ_API_KEY = st.secrets["GROQ_API_KEY"]
 
-
 st.set_page_config(
     page_title="CiteForge AI",
-    page_icon="🖋",   # optional, remove emoji if you want zero icons
+    page_icon="🖋",  # optional
     layout="wide",
-    initial_sidebar_state="collapsed",
-    menu_items={}
+    initial_sidebar_state="collapsed"
 )
+
 
 # HIDE STREAMLIT BRANDING COMPLETELY
 hide_streamlit_style = """
 <style>
+/* Hide top menu and hamburger */
 #MainMenu {visibility: hidden !important;}
+
+/* Hide footer */
 footer {visibility: hidden !important;}
+
+/* Hide header logo */
 header {visibility: hidden !important;}
+
+/* Hide sidebar branding (if present) */
 [data-testid="stSidebarNav"] {display: none !important;}
 </style>
 """
 st.markdown(hide_streamlit_style, unsafe_allow_html=True)
+
 
 
 # Enhanced Dark theme CSS
