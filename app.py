@@ -337,7 +337,7 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # Title and description
-st.title("AI Research Assistant with Citation Support")
+st.title("🖋 CiteForgeAI: Automated Research & Citation Support")
 st.markdown("Upload research papers (**PDF**, **DOCX**, **TXT**) or paste academic paper links (arXiv, PubMed), then ask your question below!")
 
 # Input Section
@@ -366,7 +366,7 @@ st.markdown('</div>', unsafe_allow_html=True)
 
 # Question Section
 st.markdown('<div class="input-section">', unsafe_allow_html=True)
-st.subheader("❓ Ask a Research Question")
+st.subheader("Ask a Research Question")
 question = st.text_input(
     "Your question:",
     placeholder="e.g. What are recent deep learning methods in medical imaging?",
