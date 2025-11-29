@@ -7,12 +7,25 @@ from citations.citation_formatter import format_citations_grouped
 
 GROQ_API_KEY = st.secrets["GROQ_API_KEY"]
 
+
 st.set_page_config(
-    page_title="🖋 CiteForge AI",
+    page_title="CiteForge AI",
+    page_icon="🖋",   # optional, remove emoji if you want zero icons
     layout="wide",
     initial_sidebar_state="collapsed",
-    menu_items=None
+    menu_items={}
 )
+
+# HIDE STREAMLIT BRANDING COMPLETELY
+hide_streamlit_style = """
+<style>
+#MainMenu {visibility: hidden;}
+footer {visibility: hidden;}
+header {visibility: hidden;}
+[data-testid="stSidebarNav"] {display: none;}
+</style>
+"""
+st.markdown(hide_streamlit_style, unsafe_allow_html=True)
 
 # Enhanced Dark theme CSS
 st.markdown("""
@@ -338,7 +351,7 @@ st.markdown("""
 
 # Title and description
 st.title("📖 CiteForgeAI: Automated Research & Citation Support")
-st.markdown("   Upload research papers (**PDF**, **DOCX**, **TXT**) or paste academic paper links (arXiv, PubMed), then ask your question below!")
+st.markdown("Upload research papers (**PDF**, **DOCX**, **TXT**) or paste academic paper links (arXiv, PubMed), then ask your question below!")
 
 # Input Section
 st.markdown('<div class="input-section">', unsafe_allow_html=True)
