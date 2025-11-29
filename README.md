@@ -7,7 +7,7 @@ A fully featured, citation-aware AI research assistant powered by **LangChain**,
 ## Live Demo
 
 Try it live here:  
-https://askmyresearch.streamlit.app/
+[https://askmyresearch.streamlit.app/](https://citation-insight.streamlit.app/)
 
 ---
 
