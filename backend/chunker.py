@@ -1,5 +1,6 @@
 from langchain.text_splitter import RecursiveCharacterTextSplitter
-from langchain.schema import Document
+from langchain.docstore.document import Document
+
 
 def chunk_documents(documents, chunk_size=500, chunk_overlap=100):
     """

@@ -1,7 +1,7 @@
 import fitz  # PyMuPDF
 import docx2txt
 import requests
-from langchain.schema import Document
+from langchain_core.documents import Document
 import os
 
 def extract_text_from_pdf_with_pages(file_path, source_name):
