@@ -8,7 +8,7 @@ from citations.citation_formatter import format_citations_grouped
 GROQ_API_KEY = st.secrets["GROQ_API_KEY"]
 
 st.set_page_config(
-    page_title="AI Research Assistant",
+    page_title="🖌 CiteForge AI",
     layout="wide",
     initial_sidebar_state="collapsed",
     menu_items=None
@@ -337,12 +337,12 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # Title and description
-st.title("🖋 CiteForgeAI: Automated Research & Citation Support")
+st.title("🔥 CiteForgeAI: Automated Research & Citation Support")
 st.markdown("Upload research papers (**PDF**, **DOCX**, **TXT**) or paste academic paper links (arXiv, PubMed), then ask your question below!")
 
 # Input Section
 st.markdown('<div class="input-section">', unsafe_allow_html=True)
-st.subheader("📄 Upload Files or Provide Paper Links")
+st.subheader("📃 Upload Files or Provide Paper Links")
 
 col1, col2 = st.columns([1, 1], gap="medium")
 
@@ -366,7 +366,7 @@ st.markdown('</div>', unsafe_allow_html=True)
 
 # Question Section
 st.markdown('<div class="input-section">', unsafe_allow_html=True)
-st.subheader("Ask a Research Question")
+st.subheader("📌 Ask a Research Question")
 question = st.text_input(
     "Your question:",
     placeholder="e.g. What are recent deep learning methods in medical imaging?",
