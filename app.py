@@ -337,8 +337,8 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # Title and description
-st.title("🔥 CiteForgeAI: Automated Research & Citation Support")
-st.markdown("Upload research papers (**PDF**, **DOCX**, **TXT**) or paste academic paper links (arXiv, PubMed), then ask your question below!")
+st.title("📖 CiteForgeAI: Automated Research & Citation Support")
+st.markdown("   Upload research papers (**PDF**, **DOCX**, **TXT**) or paste academic paper links (arXiv, PubMed), then ask your question below!")
 
 # Input Section
 st.markdown('<div class="input-section">', unsafe_allow_html=True)
