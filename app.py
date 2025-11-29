@@ -8,7 +8,7 @@ from citations.citation_formatter import format_citations_grouped
 GROQ_API_KEY = st.secrets["GROQ_API_KEY"]
 
 st.set_page_config(
-    page_title="🖌 CiteForge AI",
+    page_title="🖋 CiteForge AI",
     layout="wide",
     initial_sidebar_state="collapsed",
     menu_items=None
