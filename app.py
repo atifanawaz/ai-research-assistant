@@ -19,13 +19,14 @@ st.set_page_config(
 # HIDE STREAMLIT BRANDING COMPLETELY
 hide_streamlit_style = """
 <style>
-#MainMenu {visibility: hidden;}
-footer {visibility: hidden;}
-header {visibility: hidden;}
-[data-testid="stSidebarNav"] {display: none;}
+#MainMenu {visibility: hidden !important;}
+footer {visibility: hidden !important;}
+header {visibility: hidden !important;}
+[data-testid="stSidebarNav"] {display: none !important;}
 </style>
 """
 st.markdown(hide_streamlit_style, unsafe_allow_html=True)
+
 
 # Enhanced Dark theme CSS
 st.markdown("""
