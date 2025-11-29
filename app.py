@@ -1,59 +1,59 @@
 import os
 import streamlit as st
+
+GROQ_API_KEY = st.secrets["GROQ_API_KEY"]
+
 from backend.loader import load_documents
 from backend.embedder import create_or_load_vectorstore
 from backend.rag_chain import get_answer_with_citations
 from citations.citation_formatter import format_citations_grouped
 
-GROQ_API_KEY = st.secrets["GROQ_API_KEY"]
-
 st.set_page_config(
     page_title="AI Research Assistant",
-    layout="wide",
-    initial_sidebar_state="collapsed",
-    menu_items=None
+    layout="centered",
+    initial_sidebar_state="collapsed"
 )
 
-# Enhanced Dark theme CSS
+# <CHANGE> Complete redesign with coral/salmon and dark navy theme
 st.markdown("""
 <style>
-    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
-    
-    * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-    }
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
     
     :root {
-        --bg-primary: #0a0e27;
-        --bg-secondary: #111633;
-        --bg-tertiary: #1a1f3a;
-        --bg-card: rgba(26, 31, 58, 0.6);
-        --accent-primary: #6366f1;
-        --accent-secondary: #a78bfa;
-        --accent-tertiary: #ec4899;
-        --text-primary: #f8fafc;
-        --text-secondary: #cbd5e1;
-        --text-tertiary: #94a3b8;
-        --border-color: #334155;
+        --bg-primary: #0f0f1a;
+        --bg-secondary: #1a1a2e;
+        --bg-tertiary: #242438;
+        --accent-coral: #ff7f6b;
+        --accent-coral-light: #ff9f8f;
+        --accent-teal: #2a5d7d;
+        --accent-teal-light: #3a7d9d;
+        --text-primary: #ffffff;
+        --text-secondary: #b0b0c0;
+        --border-color: #383854;
         --success-color: #10b981;
-        --warning-color: #f59e0b;
-        --error-color: #ef4444;
+        --shadow-sm: 0 4px 12px rgba(0, 0, 0, 0.3);
+        --shadow-lg: 0 12px 40px rgba(255, 127, 107, 0.15);
+    }
+    
+    * {
+        font-family: 'Inter', sans-serif;
     }
     
     /* Main app background */
     .stApp {
         background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 50%, var(--bg-tertiary) 100%);
         color: var(--text-primary);
-        font-family: 'Poppins', sans-serif;
     }
     
     /* Main container */
     .main .block-container {
-        max-width: 1200px;
-        background: transparent;
-        padding: 2rem 1.5rem;
+        background: rgba(26, 26, 46, 0.5);
+        backdrop-filter: blur(10px);
+        border-radius: 24px;
+        padding: 2.5rem;
+        border: 1px solid var(--border-color);
+        box-shadow: var(--shadow-lg);
+        max-width: 900px;
     }
     
     /* Title styling */
@@ -61,239 +61,238 @@ st.markdown("""
         color: var(--text-primary);
         text-align: center;
         font-weight: 700;
-        font-size: 3.5rem;
+        font-size: 2.2rem;
         margin-bottom: 0.5rem;
-        background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary), var(--accent-tertiary));
+        background: linear-gradient(135deg, var(--accent-coral), var(--accent-coral-light));
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
         background-clip: text;
-        letter-spacing: -0.02em;
     }
     
-    /* Subtitle */
+    /* Subtitle styling */
     .main .stMarkdown > div:first-child > p {
         text-align: center;
         color: var(--text-secondary);
-        font-size: 1.1rem;
-        margin-bottom: 3rem;
+        font-size: 0.95rem;
+        line-height: 1.6;
+        margin-bottom: 2rem;
         font-weight: 400;
-        letter-spacing: 0.5px;
     }
     
-    /* Subheaders */
+    /* Subheader styling */
     .main h2 {
         color: var(--text-primary);
-        font-weight: 700;
-        font-size: 1.5rem;
-        margin-top: 2.5rem;
-        margin-bottom: 1.5rem;
+        font-weight: 600;
+        font-size: 1.2rem;
+        margin-top: 2rem;
+        margin-bottom: 1.2rem;
         display: flex;
         align-items: center;
-        gap: 0.75rem;
+        gap: 0.8rem;
+        padding-bottom: 1rem;
+        border-bottom: 2px solid var(--accent-coral);
     }
     
-    .main h2::before {
-        content: '';
-        display: inline-block;
-        width: 4px;
-        height: 1.5rem;
-        background: linear-gradient(180deg, var(--accent-primary), var(--accent-secondary));
-        border-radius: 2px;
-    }
-    
-    /* Input sections container */
-    .input-section {
-        background: var(--bg-card);
-        border: 1px solid var(--border-color);
-        border-radius: 16px;
-        padding: 2rem;
-        margin: 1.5rem 0;
-        backdrop-filter: blur(10px);
-        transition: all 0.3s ease;
-    }
-    
-    .input-section:hover {
-        border-color: var(--accent-primary);
-        background: rgba(26, 31, 58, 0.8);
+    .main h3 {
+        color: var(--text-primary);
+        font-weight: 600;
+        font-size: 1.1rem;
     }
     
     /* File uploader */
     .stFileUploader {
-        background: transparent !important;
-        border: 2px dashed var(--accent-primary) !important;
-        border-radius: 12px !important;
-        padding: 2rem !important;
-        transition: all 0.3s ease !important;
+        background: linear-gradient(135deg, rgba(42, 93, 125, 0.1), rgba(255, 127, 107, 0.05));
+        border-radius: 16px;
+        padding: 2rem;
+        border: 2px dashed var(--accent-coral);
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        margin: 1rem 0;
     }
     
     .stFileUploader:hover {
-        border-color: var(--accent-secondary) !important;
-        background: rgba(99, 102, 241, 0.05) !important;
+        border-color: var(--accent-coral-light);
+        background: linear-gradient(135deg, rgba(42, 93, 125, 0.15), rgba(255, 127, 107, 0.1));
+        box-shadow: var(--shadow-sm);
+        transform: translateY(-2px);
     }
     
     .stFileUploader label {
         color: var(--text-primary) !important;
-        font-weight: 600 !important;
-        font-size: 1rem !important;
+        font-weight: 600;
+        font-size: 0.95rem;
     }
     
-    /* Text area */
+    .stFileUploader div[data-testid="stFileUploaderDropzone"] {
+        background: transparent;
+        border: none;
+    }
+    
+    .stFileUploader div[data-testid="stFileUploaderDropzoneInstructions"] {
+        color: var(--text-secondary);
+        font-size: 0.9rem;
+    }
+    
+    /* Text area styling */
+    .stTextArea {
+        margin: 1.2rem 0;
+    }
+    
+    .stTextArea label {
+        color: var(--text-primary) !important;
+        font-weight: 600;
+        font-size: 0.95rem;
+    }
+    
     .stTextArea textarea {
         background: var(--bg-secondary) !important;
         border: 2px solid var(--border-color) !important;
         border-radius: 12px !important;
         color: var(--text-primary) !important;
-        font-size: 1rem !important;
+        font-size: 0.95rem !important;
         padding: 1rem !important;
-        font-family: 'Poppins', sans-serif !important;
         transition: all 0.3s ease !important;
-        min-height: 100px !important;
     }
     
     .stTextArea textarea:focus {
-        border-color: var(--accent-primary) !important;
-        box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15) !important;
+        border-color: var(--accent-coral) !important;
+        box-shadow: 0 0 0 3px rgba(255, 127, 107, 0.1) !important;
         outline: none !important;
     }
     
-    .stTextArea label {
-        color: var(--text-primary) !important;
-        font-weight: 600 !important;
-        font-size: 1rem !important;
-        margin-bottom: 0.5rem !important;
+    .stTextArea textarea::placeholder {
+        color: var(--text-secondary) !important;
+        opacity: 0.6;
     }
     
-    /* Text input */
+    /* Text input styling */
+    .stTextInput {
+        margin: 1.2rem 0;
+    }
+    
+    .stTextInput label {
+        color: var(--text-primary) !important;
+        font-weight: 600;
+        font-size: 0.95rem;
+    }
+    
     .stTextInput input {
         background: var(--bg-secondary) !important;
         border: 2px solid var(--border-color) !important;
         border-radius: 12px !important;
         color: var(--text-primary) !important;
-        font-size: 1.1rem !important;
-        padding: 1rem !important;
-        font-family: 'Poppins', sans-serif !important;
+        font-size: 0.95rem !important;
+        padding: 0.9rem 1rem !important;
         transition: all 0.3s ease !important;
     }
     
     .stTextInput input:focus {
-        border-color: var(--accent-primary) !important;
-        box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15) !important;
+        border-color: var(--accent-coral) !important;
+        box-shadow: 0 0 0 3px rgba(255, 127, 107, 0.1) !important;
         outline: none !important;
     }
     
-    .stTextInput label {
-        color: var(--text-primary) !important;
-        font-weight: 600 !important;
-        font-size: 1rem !important;
-        margin-bottom: 0.5rem !important;
+    .stTextInput input::placeholder {
+        color: var(--text-secondary) !important;
+        opacity: 0.6;
     }
     
     /* Success message */
     .stSuccess {
-        background: linear-gradient(135deg, rgba(16, 185, 129, 0.15), rgba(52, 211, 153, 0.1)) !important;
-        border: 1px solid var(--success-color) !important;
-        border-radius: 12px !important;
+        background: linear-gradient(135deg, var(--accent-coral), var(--accent-coral-light)) !important;
+        border: none !important;
+        border-radius: 16px !important;
         padding: 1.5rem !important;
-        margin: 2rem 0 !important;
-        box-shadow: 0 10px 30px rgba(16, 185, 129, 0.1) !important;
+        margin: 1.5rem 0 !important;
+        box-shadow: 0 10px 30px rgba(255, 127, 107, 0.3) !important;
     }
     
-    .stSuccess .stMarkdown p {
-        color: var(--text-primary) !important;
-        font-weight: 500 !important;
-        font-size: 1.05rem !important;
-        line-height: 1.6 !important;
+    .stSuccess .stMarkdown {
+        color: white !important;
+        font-weight: 500;
+        font-size: 1rem;
+        line-height: 1.6;
     }
     
     /* Warning message */
     .stWarning {
-        background: linear-gradient(135deg, rgba(245, 158, 11, 0.15), rgba(251, 191, 36, 0.1)) !important;
-        border: 1px solid var(--warning-color) !important;
-        border-radius: 12px !important;
+        background: linear-gradient(135deg, var(--accent-teal), var(--accent-teal-light)) !important;
+        border: none !important;
+        border-radius: 16px !important;
         padding: 1.5rem !important;
-        margin: 2rem 0 !important;
-        box-shadow: 0 10px 30px rgba(245, 158, 11, 0.1) !important;
+        margin: 1.5rem 0 !important;
+        box-shadow: 0 10px 30px rgba(42, 93, 125, 0.3) !important;
     }
     
-    .stWarning .stMarkdown p {
-        color: var(--text-primary) !important;
-        font-weight: 500 !important;
-        font-size: 1.05rem !important;
+    .stWarning .stMarkdown {
+        color: white !important;
+        font-weight: 500;
+        font-size: 1rem;
     }
     
     /* Spinner */
     .stSpinner {
         text-align: center;
-        margin: 3rem 0;
-    }
-    
-    /* Answer section */
-    .answer-section {
-        background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(139, 92, 246, 0.05));
-        border: 1px solid var(--accent-primary);
-        border-radius: 16px;
-        padding: 2rem;
         margin: 2rem 0;
-        backdrop-filter: blur(10px);
-        box-shadow: 0 20px 40px rgba(99, 102, 241, 0.1);
     }
     
-    .answer-section h3 {
-        color: var(--accent-primary);
-        font-size: 1.3rem;
-        margin-bottom: 1rem;
-        font-weight: 700;
+    .stSpinner > div {
+        border-color: var(--accent-coral) !important;
+        border-right-color: transparent !important;
     }
     
-    /* Citations styling */
-    .citations-section {
-        margin-top: 3rem;
-    }
-    
-    .citations-section h3 {
-        color: var(--accent-primary);
-        font-size: 1.3rem;
-        margin-bottom: 1.5rem;
-        font-weight: 700;
-    }
-    
+    /* Citation items - Individual blocks */
     .citation-item {
-        background: linear-gradient(135deg, var(--bg-tertiary), var(--bg-secondary));
-        border-left: 4px solid var(--accent-primary);
+        background: linear-gradient(135deg, rgba(42, 93, 125, 0.1), rgba(255, 127, 107, 0.05));
+        border-left: 4px solid var(--accent-coral);
         border-radius: 12px;
-        padding: 1.5rem;
-        margin: 1rem 0;
+        padding: 1.2rem;
+        margin: 0.9rem 0;
         color: var(--text-primary);
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-        transition: all 0.3s ease;
+        box-shadow: var(--shadow-sm);
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         border: 1px solid var(--border-color);
-        backdrop-filter: blur(5px);
+        border-left: 4px solid var(--accent-coral);
     }
     
     .citation-item:hover {
-        transform: translateX(8px);
-        box-shadow: 0 15px 40px rgba(99, 102, 241, 0.2);
-        border-left-color: var(--accent-secondary);
-        border-color: var(--accent-primary);
+        transform: translateX(4px);
+        box-shadow: var(--shadow-lg);
+        border-left-color: var(--accent-coral-light);
+        background: linear-gradient(135deg, rgba(42, 93, 125, 0.15), rgba(255, 127, 107, 0.1));
     }
     
-    .citation-number {
-        display: inline-block;
-        background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
-        color: white;
-        width: 28px;
-        height: 28px;
-        border-radius: 50%;
-        text-align: center;
-        line-height: 28px;
+    .citation-item strong {
+        color: var(--accent-coral);
         font-weight: 700;
-        font-size: 0.9rem;
-        margin-right: 0.8rem;
+    }
+    
+    .citation-item p {
+        margin: 0;
+        font-size: 0.95rem;
+        line-height: 1.6;
+    }
+    
+    /* Answer heading */
+    .main h3 {
+        color: var(--text-primary);
+        font-size: 1.1rem;
+        font-weight: 600;
+        margin-top: 2rem;
+        margin-bottom: 1rem;
+    }
+    
+    /* Divider */
+    .main hr {
+        border: none;
+        height: 2px;
+        background: linear-gradient(90deg, transparent, var(--accent-coral), transparent);
+        margin: 2.5rem 0;
+        opacity: 0.3;
     }
     
     /* Scrollbar */
     ::-webkit-scrollbar {
-        width: 10px;
+        width: 8px;
     }
     
     ::-webkit-scrollbar-track {
@@ -302,12 +301,12 @@ st.markdown("""
     }
     
     ::-webkit-scrollbar-thumb {
-        background: linear-gradient(180deg, var(--accent-primary), var(--accent-secondary));
+        background: linear-gradient(180deg, var(--accent-coral), var(--accent-coral-light));
         border-radius: 4px;
     }
     
     ::-webkit-scrollbar-thumb:hover {
-        background: linear-gradient(180deg, var(--accent-secondary), var(--accent-primary));
+        background: linear-gradient(180deg, var(--accent-coral-light), var(--accent-coral));
     }
     
     /* Hide Streamlit branding */
@@ -315,113 +314,92 @@ st.markdown("""
     footer {visibility: hidden;}
     header {visibility: hidden;}
     
-    /* Responsive design */
+    /* Responsive adjustments */
     @media (max-width: 768px) {
+        .main .block-container {
+            padding: 1.5rem;
+            border-radius: 16px;
+        }
+        
         .main h1 {
-            font-size: 2.5rem;
+            font-size: 1.8rem;
         }
         
         .main h2 {
-            font-size: 1.3rem;
-        }
-        
-        .main .block-container {
-            padding: 1rem;
-        }
-        
-        .input-section {
-            padding: 1.5rem;
+            font-size: 1.1rem;
         }
     }
 </style>
 """, unsafe_allow_html=True)
 
-# Title and description
-st.title("AI Research Assistant with Citation Support")
-st.markdown("Upload research papers (**PDF**, **DOCX**, **TXT**) or paste academic paper links (arXiv, PubMed), then ask your question below!")
+# Page title
+st.title("AI Research Assistant")
+st.markdown("📚 Upload research papers or paste academic links, then ask your question with full citations")
 
-# Input Section
-st.markdown('<div class="input-section">', unsafe_allow_html=True)
-st.subheader("📄 Upload Files or Provide Paper Links")
-
-col1, col2 = st.columns([1, 1], gap="medium")
+# Main sections
+col1, col2 = st.columns([1, 1])
 
 with col1:
+    st.subheader("📄 Upload Files")
     uploaded_files = st.file_uploader(
         "Upload research documents",
         type=["pdf", "docx", "txt"],
-        accept_multiple_files=True,
-        label_visibility="collapsed"
+        accept_multiple_files=True
     )
 
 with col2:
+    st.subheader("🔗 Paste Links")
     urls = st.text_area(
-        "Paste paper links (arXiv / PubMed, one per line)",
+        "Academic paper links",
         placeholder="https://arxiv.org/abs/1234.5678\nhttps://pubmed.ncbi.nlm.nih.gov/...",
-        height=100,
-        label_visibility="collapsed"
+        height=100
     )
 
-st.markdown('</div>', unsafe_allow_html=True)
-
-# Question Section
-st.markdown('<div class="input-section">', unsafe_allow_html=True)
-st.subheader("❓ Ask a Research Question")
+# Question section
+st.subheader("❓ Ask Your Question")
 question = st.text_input(
-    "Your question:",
-    placeholder="e.g. What are recent deep learning methods in medical imaging?",
-    label_visibility="collapsed"
+    "Research question",
+    placeholder="e.g. What are recent deep learning methods in medical imaging?"
 )
-st.markdown('</div>', unsafe_allow_html=True)
 
 # Process inputs
 if (uploaded_files or urls.strip()) and question.strip():
-    with st.spinner("🔍 Processing documents and generating your answer..."):
-        # Step 1: Load documents from files and links
+    with st.spinner("🔄 Processing documents and generating your answer..."):
+        # Step 1: Load documents
         documents = load_documents(uploaded_files, urls.splitlines())
         
         # Step 2: Create or load vector store
         vectorstore = create_or_load_vectorstore(documents)
         
-        # Step 3: Ask the question using retrieval + LLM
+        # Step 3: Get answer with citations
         answer, citations = get_answer_with_citations(question, vectorstore)
         
-        # Step 4: Display the answer with inline references
-        st.markdown('<div class="answer-section">', unsafe_allow_html=True)
-        st.markdown('### 💡 Answer')
-        st.markdown(answer)
-        st.markdown('</div>', unsafe_allow_html=True)
+        # Step 4: Display answer
+        st.subheader("💡 Answer")
+        st.success(answer)
         
-        # Step 5: Display citations in separate blocks
-        st.markdown('<div class="citations-section">', unsafe_allow_html=True)
-        st.markdown('### 📚 Citations')
-        
-        # Parse the grouped citations and display each in separate blocks
+        # Step 5: Display citations
+        st.subheader("📖 Citations")
         grouped_citations_text = format_citations_grouped(citations)
         
-        # Split by lines and process each citation
         lines = grouped_citations_text.split('\n')
         citation_counter = 1
         
         for line in lines:
             line = line.strip()
             if line and not line.startswith('#') and not line.startswith('**'):
-                # Remove markdown list formatting
                 if line.startswith('- '):
                     line = line[2:]
                 elif line.startswith('* '):
                     line = line[2:]
                 
-                # Display each citation in a separate styled block
                 if line:
                     st.markdown(f"""
                     <div class="citation-item">
-                        <span class="citation-number">{citation_counter}</span>{line}
+                        <strong>[{citation_counter}]</strong> {line}
                     </div>
                     """, unsafe_allow_html=True)
                     citation_counter += 1
-        
-        st.markdown('</div>', unsafe_allow_html=True)
 
 elif question and not (uploaded_files or urls.strip()):
     st.warning("⚠️ Please upload at least one document or provide academic links to proceed.")
